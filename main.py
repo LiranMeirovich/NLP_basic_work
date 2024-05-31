@@ -4,6 +4,8 @@ import pandas as pd
 from collections import Counter
 import re
 from spacy.lang.en import English
+# nltk.download("punkt")
+# nltk.download('stopwords')
 from nltk.stem import PorterStemmer
 from nltk.stem import LancasterStemmer
 from nltk.stem.snowball import SnowballStemmer
@@ -67,30 +69,41 @@ def nltk_preprocess(text):
     return filtered_tokens
 
 
-nltk_tokenized_set = []
-for line in corpus:
-    nltk_tokenized_set.append((nltk_preprocess(line)))
+# nltk_tokenized_set = []
+# for line in corpus:
+#     nltk_tokenized_set.append((nltk_preprocess(line)))
 
-tokenizer = English()
+nlp = spacy.load("en_core_web_sm")
 def spacy_preprocess(string):
     # Process the document using spaCy
-    doc = tokenizer(string)
+    doc = nlp(string)
     # Remove stopwords and non-alphabetic tokens, and convert to lowercase
-    filtered_tokens = [token.text.lower() for token in doc if not token.is_stop and token.is_alpha]
+    filtered_tokens = [token for token in doc if not token.is_stop and token.is_alpha]
     return filtered_tokens
 
 spacy_tokenized_set = [((spacy_preprocess(line))) for line in corpus]
 
+# print(spacy_tokenized_set)
+
+# spacy.cli.download("en_core_web_sm")
+
 nlp = spacy.load("en_core_web_sm")
-def spacy_preprocess_and_lemmatize(document):
-    # Process the document using Spacy
-    doc = nlp(document)
-    # Remove stopwords and non-alphabetic tokens, convert to lowercase, and lemmatize
-    lemmatized_tokens = [token.lemma_.lower() for token in doc if not token.is_stop and token.is_alpha]
-    return lemmatized_tokens
 
-spacy_lemmatized_tokens = [spacy_preprocess_and_lemmatize(line) for line in corpus]
 
+def spacy_lemmatize(tokens):
+    # Process the document using spaCy
+    # print(tokens)
+    lemmatized_tokens = [token.lemma_ for token in tokens]
+    # print(lemmatized_tokens)
+
+    return [lemmatized_tokens]
+
+spacy_lemmatized_tokens = [spacy_lemmatize(tokens) for tokens in spacy_tokenized_set]
+
+# print(spacy_lemmatized_tokens)
+
+#
+# print(nltk_tokenized_set[2])
 print(spacy_lemmatized_tokens[2])
 print(spacy_tokenized_set[2])
 
