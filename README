@@ -1,0 +1,99 @@
+______PART 1 - Data Loading & Basic Analysis______
+
+The total number of SMS messages  in spam is:  5572
+The Number of ham's is:  4825  The Number of spam's is:  747
+The average number of words per message is:  15.494436468054559
+The 5 most frequent words are:
+ i: 3001
+ to: 2242
+ you: 2240
+ a: 1433
+ the: 1328
+
+There are  4378  words that appear once
+
+______PART 2 - Text Processing______
+
+NLTK Tokenization Time: 1.275159 seconds
+NLTK Lemmatization Time: 2.517204 seconds
+NLTK Stemming Time: 0.404182 seconds
+spaCy Tokenization Time: 0.447725 seconds
+spaCy Lemmatization Time: 0.006000 seconds
+spaCy Stemming Time: 0.394185 seconds
+
+Example 95:
+NLTK Tokenized Set: ['planning', 'buy', 'later', 'check', 'already', 'lido', 'got', 'show', 'e', 'afternoon', 'U', 'finish', 'work', 'already']
+NLTK Lemmatized Set: ['planning', 'buy', 'later', 'check', 'already', 'lido', 'got', 'show', 'e', 'afternoon', 'U', 'finish', 'work', 'already']
+NLTK Stemmed Set: ['plan', 'buy', 'later', 'check', 'alreadi', 'lido', 'got', 'show', 'e', 'afternoon', 'u', 'finish', 'work', 'alreadi']
+spaCy Tokenized Set: [planning, buy, later, check, lido, got, e, afternoon, U, finish, work]
+spaCy Lemmatized Tokens: ['', '', '', '', '', '', '', '', '', '', '']
+spaCy Stemmed Tokens: ['plan', 'buy', 'later', 'check', 'lido', 'got', 'e', 'afternoon', 'u', 'finish', 'work']
+
+Example 686:
+NLTK Tokenized Set: ['wanted', 'ask', 'wait', 'finish', 'lect', 'Cos', 'lect', 'finishes', 'hour']
+NLTK Lemmatized Set: ['wanted', 'ask', 'wait', 'finish', 'lect', 'Cos', 'lect', 'finish', 'hour']
+NLTK Stemmed Set: ['want', 'ask', 'wait', 'finish', 'lect', 'co', 'lect', 'finish', 'hour']
+spaCy Tokenized Set: [wanted, ask, Ì, wait, finish, lect, Cos, lect, finishes, hour]
+spaCy Lemmatized Tokens: ['', '', '', '', '', '', '', '', '', '']
+spaCy Stemmed Tokens: ['want', 'ask', 'ì', 'wait', 'finish', 'lect', 'co', 'lect', 'finish', 'hour']
+
+
+The text for the comparison between nltk and spaCy is:
+
+In the whimsical world of quantum mechanics, a photon and an electron walked into a bar.
+The bartender, a witty neutron, said, "Sorry, we don't serve your kind here."
+The photon replied, "But we're both particles!" to which the neutron quipped, "Ah, but you, my dear photon, are just light-hearted,
+while this electron here always has too much mass for its momentum!"
+And with a burst of laughter that could rival the Big Bang, they all toasted to uncertainty and the absurdity of quantum humor.
+
+The nltk tokenized result is: [[], ['whimsical', 'world', 'quantum', 'mechanics', 'photon', 'electron', 'walked', 'bar'], ['bartender', 'witty', 'neutron', 'said', 'Sorry', 'serve', 'kind'], ['photon', 'replied', 'particles', 'neutron', 'quipped', 'Ah', 'dear', 'photon'], ['electron', 'always', 'much', 'mass', 'momentum'], ['burst', 'laughter', 'could', 'rival', 'Big', 'Bang', 'toasted', 'uncertainty', 'absurdity', 'quantum', 'humor']]
+Time taken for nltk tokenization is: 0.001992940902709961 seconds
+The spaCy tokenized result is: [[], [whimsical, world, quantum, mechanics, photon, electron, walked, bar], [bartender, witty, neutron, said, Sorry, serve, kind], [photon, replied, particles, neutron, quipped, Ah, dear, photon, light, hearted], [electron, mass, momentum], [burst, laughter, rival, Big, Bang, toasted, uncertainty, absurdity, quantum, humor]]
+Time taken for spaCy tokenization is: 0.028006792068481445 seconds
+The nltk lemmatized result is: [[], ['whimsical', 'world', 'quantum', 'mechanic', 'photon', 'electron', 'walked', 'bar'], ['bartender', 'witty', 'neutron', 'said', 'Sorry', 'serve', 'kind'], ['photon', 'replied', 'particle', 'neutron', 'quipped', 'Ah', 'dear', 'photon'], ['electron', 'always', 'much', 'mass', 'momentum'], ['burst', 'laughter', 'could', 'rival', 'Big', 'Bang', 'toasted', 'uncertainty', 'absurdity', 'quantum', 'humor']]
+Time taken for nltk lemmatization is: 0.003002166748046875 seconds
+The spaCy lemmatized result is: [[], ['whimsical', 'world', 'quantum', 'mechanic', 'photon', 'electron', 'walk', 'bar'], ['bartender', 'witty', 'neutron', 'say', 'sorry', 'serve', 'kind'], ['photon', 'reply', 'particle', 'neutron', 'quip', 'ah', 'dear', 'photon', 'light', 'hearted'], ['electron', 'mass', 'momentum'], ['burst', 'laughter', 'rival', 'Big', 'Bang', 'toast', 'uncertainty', 'absurdity', 'quantum', 'humor']]
+Time taken for spaCy lemmatization is: 0.0 seconds
+The nltk stemmed result is: [[], ['whimsic', 'world', 'quantum', 'mechan', 'photon', 'electron', 'walk', 'bar'], ['bartend', 'witti', 'neutron', 'said', 'sorri', 'serv', 'kind'], ['photon', 'repli', 'particl', 'neutron', 'quip', 'ah', 'dear', 'photon'], ['electron', 'alway', 'much', 'mass', 'momentum'], ['burst', 'laughter', 'could', 'rival', 'big', 'bang', 'toast', 'uncertainti', 'absurd', 'quantum', 'humor']]
+Time taken for nltk stemmetization is: 0.0 seconds
+The spaCy stemmed result is: [[], ['whimsic', 'world', 'quantum', 'mechan', 'photon', 'electron', 'walk', 'bar'], ['bartend', 'witti', 'neutron', 'said', 'sorri', 'serv', 'kind'], ['photon', 'repli', 'particl', 'neutron', 'quip', 'ah', 'dear', 'photon', 'light', 'heart'], ['electron', 'mass', 'momentum'], ['burst', 'laughter', 'rival', 'big', 'bang', 'toast', 'uncertainti', 'absurd', 'quantum', 'humor']]
+Time taken for spaCy stemmetization is: 0.001008749008178711 seconds
+
+Statistics for nltk:
+NLTK Word Count: 42923
+NLTK Top 5 Frequent Words: [('u', 783), ('call', 389), ('get', 332), ('gt', 311), ('lt', 309)]
+
+Statistics for spaCy:
+spaCy Word Count: 38400
+spaCy Top 5 Frequent Words: [('u', 762), ('ur', 297), ('nt', 291), ('U', 278), ('know', 254)]
+
+______PART 3 - WEB SCRAPING______
+
+Tokenized Title: ['TIL', 'actually', 'know', 'testicles', 'outside', 'body', 'theories', 'like', 'due', 'heat', 'fail', 'since', 'many', 'animals', 'like', 'elephants', 'birds', 'testicles', 'inside', 'body', 'higher', 'internal', 'temperature', 'others', 'like', 'galloping', 'hypothesis', 'proposed', 'theories', 'failed', 'one', 'way', 'another']
+Lemmatized Title: ['TIL', 'actually', 'know', 'testicle', 'outside', 'body', 'theory', 'like', 'due', 'heat', 'fail', 'since', 'many', 'animal', 'like', 'elephant', 'bird', 'testicle', 'inside', 'body', 'higher', 'internal', 'temperature', 'others', 'like', 'galloping', 'hypothesis', 'proposed', 'theory', 'failed', 'one', 'way', 'another']
+Stemmed Title: ['til', 'actual', 'know', 'testicl', 'outsid', 'bodi', 'theori', 'like', 'due', 'heat', 'fail', 'sinc', 'mani', 'anim', 'like', 'eleph', 'bird', 'testicl', 'insid', 'bodi', 'higher', 'intern', 'temperatur', 'other', 'like', 'gallop', 'hypothesi', 'propos', 'theori', 'fail', 'one', 'way', 'anoth']
+
+Before Tokenization:
+Top 5 Most Frequently Used Words: [('the', 44), ('to', 26), ('til', 24), ('of', 22), ('in', 22)]
+Total Word Count: 825
+
+After Tokenization:
+Top 5 Most Frequently Used Words: [('TIL', 25), ('like', 4), ('liver', 3), ('made', 3), ('played', 3)]
+Total Word Count: 447
+
+______PART 4 - WhatsApp Analysis______
+
+Original message: 21:47]: I'm on a whiskey diet. I've lost three days already.
+Tokenized message: ['whiskey', 'diet', 'lost', 'three', 'days', 'already']
+Lemmatized message: ['whiskey', 'diet', 'lost', 'three', 'day', 'already']
+Stemmed message: ['whiskey', 'diet', 'lost', 'three', 'day', 'alreadi']
+
+Comparisons of word statistics before and after processing
+
+The total number of SMS messages in chat.txt is:  100
+Before Lemmatization:
+Top 5 Most Frequently Used Words: [('the', 44), ('to', 26), ('til', 24), ('of', 22), ('in', 22)]
+Total Word Count: 825
+After Lemmatization:
+Top 5 Most Frequently Used Words: [('diet', 8), ('day', 8), ('work', 7), ('right', 6), ('lost', 6)]
+Total Word Count: 537
