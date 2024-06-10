@@ -64,7 +64,7 @@ print("\nThere are ", single_words, " words that appear once\n")
 print("______PART 2 - Text Processing______\n")
 
 corpus = []
-with open('spam.csv', 'r') as f:
+with open('spam.csv', 'r', encoding='latin-1') as f:
     for line in f:
         corpus.append(" ".join(line.split()[1:]))
 
@@ -269,10 +269,33 @@ def lovely_soup(u):
     return BeautifulSoup(r.text, 'lxml')
 
 
-url = 'https://old.reddit.com/r/todayilearned/top/'
+url = 'https://old.reddit.com/r/todayilearned/top'
 soup = lovely_soup(url)
 
-titles = soup.findAll('p', {'class': 'title'})
+
+# Define the function to get titles from the page
+def get_titles_and_next_url(url):
+    soup = lovely_soup(url)
+    titles = soup.findAll('p', {'class': 'title'})
+
+    # Find the URL for the next page
+    next_button = soup.find('span', {'class': 'next-button'})
+    if next_button:
+        next_url = next_button.find('a')['href']
+        return next_url, titles
+    return None
+
+
+# Start scraping from the first page
+url = 'https://old.reddit.com/r/todayilearned/'
+next_url = url
+
+titles = []
+
+for i in range(0, 10):
+    next_url, title = get_titles_and_next_url(next_url)
+    for line in title:
+        titles.append(line)
 
 nltk_tokenized_titles = []
 for line in titles:
@@ -356,11 +379,11 @@ for tokens in lemmatized_tokens:
     tokenized_word_count.update(tokens)
 
 # Get the top 5 most common words
-top_5_original = original_word_count.most_common(5)
+top_5_original = whatsApp_word_count.most_common(5)
 top_5_tokenized = tokenized_word_count.most_common(5)
 
 # Calculate total word counts
-total_words_original = sum(original_word_count.values())
+total_words_original = sum(whatsApp_word_count.values())
 total_words_tokenized = sum(tokenized_word_count.values())
 
 
