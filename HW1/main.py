@@ -25,7 +25,7 @@ nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 
 import time
-df = pd.read_csv("./spam.csv", encoding='latin-1')
+df = pd.read_csv("spam.csv", encoding='latin-1')
 print("______PART 1 - Data Loading & Basic Analysis______\n")
 print("The total number of SMS messages  in spam is: ", df['v2'].count())
 print("The Number of ham's is: ", df[df['v1'] == 'ham'].shape[0], " The Number of spam's is: ",
