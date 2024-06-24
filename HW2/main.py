@@ -113,38 +113,97 @@ from gensim.models import Word2Vec
 from nltk.corpus import brown
 
 # Train the Word2Vec model
-model = Word2Vec(
-    sentences=lemmatized_tokens,      # The corpus to train the model on
-    vector_size=100,       # The size of the word vectors to be learned
-    window=5,              # The size of the window of words to be considered
-    min_count=1,           # The minimum frequency required for a word to be included in the vocabulary
-    sg=0,                  # 0 for CBOW, 1 for skip-gram
-    negative=5,            # The number of negative samples to use for negative sampling
-    ns_exponent=0.75,      # The exponent used to shape the negative sampling distribution
-    alpha=0.03,            # The initial learning rate
-    min_alpha=0.0007,      # The minimum learning rate to which the learning rate will be linearly reduced
-    epochs=30,             # The number of epochs (iterations) over the corpus
-    workers=4,             # The number of worker threads to use for training the model
-    seed=42,               # The seed for the random number generator
-    max_vocab_size=None    # The maximum vocabulary size (None means no limit)
-)
+# model = Word2Vec(
+#     sentences=lemmatized_tokens,      # The corpus to train the model on
+#     vector_size=100,       # The size of the word vectors to be learned
+#     window=5,              # The size of the window of words to be considered
+#     min_count=1,           # The minimum frequency required for a word to be included in the vocabulary
+#     sg=0,                  # 0 for CBOW, 1 for skip-gram
+#     negative=5,            # The number of negative samples to use for negative sampling
+#     ns_exponent=0.75,      # The exponent used to shape the negative sampling distribution
+#     alpha=0.03,            # The initial learning rate
+#     min_alpha=0.0007,      # The minimum learning rate to which the learning rate will be linearly reduced
+#     epochs=30,             # The number of epochs (iterations) over the corpus
+#     workers=4,             # The number of worker threads to use for training the model
+#     seed=42,               # The seed for the random number generator
+#     max_vocab_size=None    # The maximum vocabulary size (None means no limit)
+# )
+#
+# print(model)
+#
+# # Get the vector representation of a word
+#
+# vector = model.wv['three']
+#
+# # Find the most similar words to a given word
+# similar_words = model.wv.most_similar('three')
+#
+# # Print the vector and similar words
+# print("Vector for 'three':", vector)
+# print("Most similar words to 'three':", similar_words)
+#
+import numpy as np
+from scipy import sparse
+from sklearn.utils.extmath import randomized_svd
 
-print(model)
+wordsArr = []
 
-# Get the vector representation of a word
+for fuck in lemmatized_tokens:
+    for word in fuck:
+        wordsArr.append(word)
 
-vector = model.wv['three']
-
-# Find the most similar words to a given word
-similar_words = model.wv.most_similar('three')
-
-# Print the vector and similar words
-print("Vector for 'three':", vector)
-print("Most similar words to 'three':", similar_words)
+print(type(wordsArr))
 
 
+def build_cooccurrence_matrix(corpus, window_size=2):
+    vocab = list(set(corpus))
+    word_to_id = {word: i for i, word in enumerate(vocab)}
+    cooccurrence = sparse.lil_matrix((len(vocab), len(vocab)), dtype=np.float64)
+
+    for i, word in enumerate(corpus):
+        left_context = max(0, i - window_size)
+        right_context = min(len(corpus), i + window_size + 1)
+        for j in range(left_context, right_context):
+            if i != j:
+                cooccurrence[word_to_id[word], word_to_id[corpus[j]]] += 1
+
+    return cooccurrence.tocsr(), word_to_id
 
 
+def glove_loss(X, W, b, U, c):
+    return np.sum(np.power(W.dot(U.T) + b[:, np.newaxis] + c[np.newaxis, :] - np.log(X.toarray() + 1), 2))
 
 
+def train_glove(X, vector_size=50, iterations=50, learning_rate=0.001):
+    vocab_size = X.shape[0]
+    W = np.random.randn(vocab_size, vector_size) / np.sqrt(vector_size)
+    U = np.random.randn(vocab_size, vector_size) / np.sqrt(vector_size)
+    b = np.zeros(vocab_size)
+    c = np.zeros(vocab_size)
+
+    for _ in range(iterations):
+        grad_W = 2 * (W.dot(U.T) + b[:, np.newaxis] + c[np.newaxis, :] - np.log(X.toarray() + 1)).dot(U)
+        grad_U = 2 * (W.dot(U.T) + b[:, np.newaxis] + c[np.newaxis, :] - np.log(X.toarray() + 1)).T.dot(W)
+        grad_b = 2 * np.sum(W.dot(U.T) + b[:, np.newaxis] + c[np.newaxis, :] - np.log(X.toarray() + 1), axis=1)
+        grad_c = 2 * np.sum(W.dot(U.T) + b[:, np.newaxis] + c[np.newaxis, :] - np.log(X.toarray() + 1), axis=0)
+
+        W -= learning_rate * grad_W
+        U -= learning_rate * grad_U
+        b -= learning_rate * grad_b
+        c -= learning_rate * grad_c
+
+        if _ % 10 == 0:
+            print(f"Iteration {_}, Loss: {glove_loss(X, W, b, U, c)}")
+
+    return (W + U) / 2
+
+
+# Example usage
+corpus = ["the", "cat", "sat", "on", "the", "mat", "the", "dog", "sat", "on", "the", "floor"]
+X, word_to_id = build_cooccurrence_matrix(wordsArr)
+word_vectors = train_glove(X, vector_size=5, iterations=100)
+
+# Print word vectors
+for word, idx in word_to_id.items():
+    print(f"{word}: {word_vectors[idx]}")
 
