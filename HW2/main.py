@@ -75,12 +75,7 @@ print("Lemmatized message:", lemmatized_tokens[5])
 # print("\nComparisons of word statistics before and after processing\n")
 # print("The total number of SMS messages in chat.txt is: ", len(whatsApp_corpus))
 
-# Import necessary libraries
-
-# Define sample corpus of documents
-
-# Create an instance of CountVectorizer with default settings
-
+print("______PART 5.a - BoW______\n")
 words = []
 for i in lemmatized_tokens:
     words.append(' '.join(i))
@@ -92,68 +87,72 @@ def bow(corpus):
     # Fit the vectorizer on the corpus and transform the corpus into a BOW matrix
     return vectorizer.fit_transform(corpus).toarray(), vectorizer.get_feature_names_out()
 
-# bow_matrix, feature_names= bow(words)
-#
-# # Print the BOW matrix
-# print(bow_matrix)
-#
-# # Print the feature names (i.e., unique words) learned by the vectorizer
-# print(feature_names)
+bow_matrix, feature_names= bow(words)
+
+# Print the BOW matrix
+print(bow_matrix)
+
+# Print the feature names (i.e., unique words) learned by the vectorizer
+print(feature_names)
+
+print("______PART 5.b - TF-IDF______\n")
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# # Create and apply TF-IDF vectorizer
-# vectorizer = TfidfVectorizer()
-# tfidf_matrix = vectorizer.fit_transform(words)
-#
-# print(tfidf_matrix)
+# Create and apply TF-IDF vectorizer
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(words)
+
+print(tfidf_matrix)
+
+print("______PART 5.c - Word2Vec______\n")
+
 
 # Import necessary libraries
 from gensim.models import Word2Vec
 from nltk.corpus import brown
 
 # Train the Word2Vec model
-# model = Word2Vec(
-#     sentences=lemmatized_tokens,      # The corpus to train the model on
-#     vector_size=100,       # The size of the word vectors to be learned
-#     window=5,              # The size of the window of words to be considered
-#     min_count=1,           # The minimum frequency required for a word to be included in the vocabulary
-#     sg=0,                  # 0 for CBOW, 1 for skip-gram
-#     negative=5,            # The number of negative samples to use for negative sampling
-#     ns_exponent=0.75,      # The exponent used to shape the negative sampling distribution
-#     alpha=0.03,            # The initial learning rate
-#     min_alpha=0.0007,      # The minimum learning rate to which the learning rate will be linearly reduced
-#     epochs=30,             # The number of epochs (iterations) over the corpus
-#     workers=4,             # The number of worker threads to use for training the model
-#     seed=42,               # The seed for the random number generator
-#     max_vocab_size=None    # The maximum vocabulary size (None means no limit)
-# )
-#
-# print(model)
-#
-# # Get the vector representation of a word
-#
-# vector = model.wv['three']
-#
-# # Find the most similar words to a given word
-# similar_words = model.wv.most_similar('three')
-#
-# # Print the vector and similar words
-# print("Vector for 'three':", vector)
-# print("Most similar words to 'three':", similar_words)
-#
+model = Word2Vec(
+    sentences=lemmatized_tokens,      # The corpus to train the model on
+    vector_size=100,       # The size of the word vectors to be learned
+    window=5,              # The size of the window of words to be considered
+    min_count=1,           # The minimum frequency required for a word to be included in the vocabulary
+    sg=0,                  # 0 for CBOW, 1 for skip-gram
+    negative=5,            # The number of negative samples to use for negative sampling
+    ns_exponent=0.75,      # The exponent used to shape the negative sampling distribution
+    alpha=0.03,            # The initial learning rate
+    min_alpha=0.0007,      # The minimum learning rate to which the learning rate will be linearly reduced
+    epochs=30,             # The number of epochs (iterations) over the corpus
+    workers=4,             # The number of worker threads to use for training the model
+    seed=42,               # The seed for the random number generator
+    max_vocab_size=None    # The maximum vocabulary size (None means no limit)
+)
+
+# Get the vector representation of a word
+
+vector = model.wv['three']
+
+# Find the most similar words to a given word
+similar_words = model.wv.most_similar('three')
+
+# Print the vector and similar words
+print("Vector for 'three':", vector)
+print("Most similar words to 'three':", similar_words)
+
+print("______PART 6 - GLOVE______\n")
+
 import numpy as np
 from scipy import sparse
 from sklearn.utils.extmath import randomized_svd
 
+#The glove algorithm we were shown was applied on a list of words
+#And so we put all the words in the lemmatized list into wordsArr
 wordsArr = []
 
-for fuck in lemmatized_tokens:
-    for word in fuck:
+for line in lemmatized_tokens:
+    for word in line:
         wordsArr.append(word)
-
-print(type(wordsArr))
-
 
 def build_cooccurrence_matrix(corpus, window_size=2):
     vocab = list(set(corpus))
@@ -198,12 +197,137 @@ def train_glove(X, vector_size=50, iterations=50, learning_rate=0.001):
     return (W + U) / 2
 
 
-# Example usage
-corpus = ["the", "cat", "sat", "on", "the", "mat", "the", "dog", "sat", "on", "the", "floor"]
 X, word_to_id = build_cooccurrence_matrix(wordsArr)
 word_vectors = train_glove(X, vector_size=5, iterations=100)
 
-# Print word vectors
-for word, idx in word_to_id.items():
+# Print word vectors, only printing 5 because that it's a lot of words
+for i, (word, idx) in enumerate(word_to_id.items()):
+    if i >= 5:
+        break
     print(f"{word}: {word_vectors[idx]}")
 
+
+print("______PART 7 - CYK______\n")
+def cyk_parse(sentence, grammar):
+    # Step 1: Tokenization
+    tokens = sentence.split()
+    n = len(tokens)
+    table = [[set() for _ in range(n+1)] for _ in range(n+1)]
+
+    # Step 2: Initialization
+    for i in range(1, n+1):
+        for rule in grammar:
+            if rule[1] == tokens[i-1]:
+                table[i][i].add(rule[0])
+
+    # Step 3: Rule Application
+    for length in range(2, n+1):
+        for i in range(1, n-length+2):
+            j = i + length - 1
+            for k in range(i, j):
+                for rule in grammar:
+                    if len(rule) == 3:
+                        for left in table[i][k]:
+                            for right in table[k+1][j]:
+                                if rule[1] in left and rule[2] in right:
+                                    table[i][j].add(rule[0])
+
+    # Step 4: Backtracking
+    if 'S' in table[1][n]:
+        return True, table
+    else:
+        return False, table
+
+
+# Example usage:
+
+# Define the context-free grammar in CNF
+# There are algorithms that do this automatically
+# But for time management we decided to hard-code them using Claude
+grammars = [
+    # Grammar for "brain many tabs open"
+    [
+        ('S', 'NP', 'Adj'),
+        ('NP', 'Noun', 'NP'),
+        ('NP', 'Adj', 'Noun'),
+        ('Noun', 'brain'),
+        ('Noun', 'tabs'),
+        ('Adj', 'many'),
+        ('Adj', 'open')
+    ],
+
+    # Grammar for "reading book impossible put"
+    [
+        ('S', 'VP', 'Verb'),
+        ('VP', 'VP', 'Adj'),
+        ('VP', 'Verb', 'Noun'),
+        ('Verb', 'reading'),
+        ('Verb', 'put'),
+        ('Noun', 'book'),
+        ('Adj', 'impossible')
+    ],
+
+    # Grammar for "used think indecisive sure"
+    [
+        ('S', 'VP', 'AdjP'),
+        ('VP', 'Verb', 'Verb'),
+        ('AdjP', 'Adj', 'Adj'),
+        ('Verb', 'used'),
+        ('Verb', 'think'),
+        ('Adj', 'indecisive'),
+        ('Adj', 'sure')
+    ],
+
+    # Grammar for "fall floor needed hug"
+    [
+        ('S', 'VP', 'NP'),
+        ('VP', 'Verb', 'Noun'),
+        ('NP', 'Adj', 'Noun'),
+        ('Verb', 'fall'),
+        ('Noun', 'floor'),
+        ('Adj', 'needed'),
+        ('Noun', 'hug')
+    ],
+
+    # Grammar for "roll Butter call biscuit"
+    [
+        ('S', 'VP', 'NP'),
+        ('VP', 'Verb', 'Noun'),
+        ('NP', 'Verb', 'Noun'),
+        ('Verb', 'roll'),
+        ('Verb', 'call'),
+        ('Noun', 'Butter'),
+        ('Noun', 'biscuit')
+    ]
+]
+
+# Algorithm works on whole sentences and so we will make a list of strings where
+# each string is a sentence.
+sentences = []
+for i in tokenized_set:
+    sentences.append(' '.join(i))
+
+# We decided to take 5 sentences that are of length 4 to make it not too difficult to hardcode
+# them but also to show a table which isn't just 2 dimensional and boring
+sentences_with_four_words = [sentence for sentence in sentences if len(sentence.split()) == 4]
+selected_sentences = sentences_with_four_words[:5]
+
+print(selected_sentences)
+
+# Input sentence to be parsed
+# sentence = "the cat chased a dog"
+
+# Call the CYK parser
+for i in range(0, len(selected_sentences)):
+    parsed, table = cyk_parse(selected_sentences[i], grammars[i])
+
+    if parsed:
+        print("Input sentence: ", selected_sentences[i])
+        print("Parse table: ")
+        for row in table:
+            print(row)
+    else:
+        print("Input sentence: ", selected_sentences[i])
+        print("Sentence not parsed.")
+
+# Print the parse table and whether the sentence was parsed or not
